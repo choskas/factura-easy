@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Bitter-semibold';
+    src: url('/fonts/Bitter-SemiBold.woff') format('woff');
+    font-family: 'Raleway-medium';
+    src: url('/fonts/Raleway-Medium.woff') format('woff');
+    font-family: 'Raleway-regular';
+    src: url('/fonts/Raleway-Regular.woff') format('woff');
+  }

@@ -1,0 +1,40 @@
+.font-nav-title {
+    font-family: var(--bitter-semibold), comic-sans;
+    font-size: 18px;
+  }
+  
+  .font-title {
+    font-family: var(--bitter-semibold), comic-sans;
+    font-size: 24px;
+  }
+
+  .font-bold-description {
+    font-family: var(--bitter-semibold), comic-sans;
+    font-size: 16px;
+  }
+  
+  
+  .font-subtitle {
+    font-family: var(--raleway-regular), comic-sans;
+    font-size: 18px;
+  }
+  
+  .font-subtitle-bold {
+    font-family: var(--raleway-medium), comic-sans;
+    font-size: 18px;
+  }
+  
+  .font-description {
+    font-family: var(--raleway-regular), comic-sans;
+    font-size: 16px;
+  }
+  
+  .font-caption {
+    font-family: var(--raleway-regular), comic-sans;
+    font-size: 12px;
+  }
+  
+  .font-small {
+    font-family: var(--raleway-regular), sans-serif;
+    font-size: 11px;
+  }
