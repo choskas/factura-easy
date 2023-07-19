@@ -13,8 +13,8 @@ import { NextAuthProvider } from "@/components/theme-provider/NextAuthProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Facturation",
-  description: "facturations",
+  title: "Factureasy",
+  description: "Factureasys",
 };
 
 const bitterSemibold = localFont({

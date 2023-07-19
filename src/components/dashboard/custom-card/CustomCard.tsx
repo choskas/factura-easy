@@ -14,7 +14,8 @@ const CustomCard = ({
   iconButton,
   buttonText,
   buttonVariant,
-  linkTo
+  linkTo,
+  buttonTo
 }: CustomCardProps) => {
   return (
     <Card className="p-[24px]">
@@ -24,11 +25,13 @@ const CustomCard = ({
         <p className="font-title text-[#077DBF]">{number}</p>
         <p className="font-subtitle">{numberDescription}</p>
       </div>
+      <Link href={linkTo}>
       <div className="flex justify-end items-center cursor-pointer mb-[24px]">
         {linkIcon}
         <p className="font-description text-[#077DBF]">{linkDescription}</p>
       </div>
-      <Link href={linkTo}>
+      </Link>
+      <Link href={buttonTo}>
       <Button
         onClick={onClickButton}
         variant={buttonVariant ? buttonVariant : "default" }

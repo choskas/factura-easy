@@ -1,26 +1,6 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { getAllCustomers, postNewCustomer } from "@/services/customers";
-import { getAllInvoice, postNewInvoice } from "@/services/invoice";
-import { postNewProduct } from "@/services/products";
-import { Toggle } from "@radix-ui/react-toggle";
 import { MoonIcon, PlusCircle, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import CreateNewCustomer from "@/components/create-customer/CreateNewCustomer";
-import Head from "next/head";
-import { Metadata } from "next";
-import { Card } from "@/components/ui/card";
+
 import {
   CounterClockwiseClockIcon,
   OpenInNewWindowIcon,
@@ -52,7 +32,6 @@ type Customer = {
 
 export default function Home() {
  const session = useSession()
-
   return (
     <main className="flex min-h-screen flex-col dark:bg-zinc-950 bg-whited p-[24px]">
       <h2 className="font-title text-center mb-[24px]">Inicio</h2>
@@ -64,7 +43,7 @@ export default function Home() {
             <span className="font-bold-description">Factureasy</span>.
           </span>
         }
-        number={12}
+        number={session.data?.available_folios as number}
         numberDescription="Disponibles"
         linkIcon={
           <CounterClockwiseClockIcon color="#077DBF" className="mr-[8px]" />
@@ -73,7 +52,8 @@ export default function Home() {
         onClickButton={() => {}}
         iconButton={<PlusCircle className="mr-[8px]" size={24} />}
         buttonText="Nueva factura"
-        linkTo="/create-customer"
+        buttonTo="/invoice/create"
+        linkTo="/invoice"
       />
 
       <section className="my-[24px]">
@@ -90,7 +70,8 @@ export default function Home() {
           iconButton={<PlusCircle className="mr-[8px]" size={24} />}
           buttonText="Agregar cliente"
           buttonVariant="outline"
-          linkTo="/create-customer"
+          buttonTo="/customer/create"
+          linkTo="/customer"
         />
       </section>
 
@@ -104,11 +85,12 @@ export default function Home() {
             <OpenInNewWindowIcon color="#077DBF" className="mr-[8px]" />
           }
           linkDescription="Ver mis productos"
-          onClickButton={() => {}}
+          onClickButton={() =>{}}
           iconButton={<PlusCircle className="mr-[8px]" size={24} />}
-          buttonText="Agregar cliente"
+          buttonText="Agregar producto"
           buttonVariant="outline"
-          linkTo="/create-customer"
+          buttonTo="/product/create"
+          linkTo="/product"
         />
       </section>
       {/* <section className="flex flex-col items-center mt-[100px]">

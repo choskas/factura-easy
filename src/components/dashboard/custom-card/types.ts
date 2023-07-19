@@ -10,4 +10,5 @@ export type CustomCardProps = {
   buttonText: string;
   buttonVariant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost"
   linkTo: string
+  buttonTo: string
 };

@@ -26,13 +26,14 @@ export async function POST(req: Request) {
         email: true,
         emailVerified: true,
         image: true,
+        facturapi_token: true,
+        available_folios: true,
         address: {
           select: {
             street: true,
             exterior: true,
             interior: true,
             neighborhood: true,
-            city: true,
             municipality: true,
             zip: true,
             state: true,

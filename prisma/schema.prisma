@@ -12,7 +12,7 @@ datasource db {
 
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  user_id           String
   type              String
   provider          String
   providerAccountId String
@@ -24,7 +24,7 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
 
-  user User_Organization @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -32,9 +32,9 @@ model Account {
 model Session {
   id           String            @id @default(cuid())
   sessionToken String            @unique
-  userId       String
+  user_id      String
   expires      DateTime
-  user         User_Organization @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -45,39 +45,66 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
 model User_Organization {
-  id              String    @id @default(uuid())
-  facturapi_id    String?   @unique
-  api_token       String?   @unique
-  name            String?
-  maternal_name   String?
-  last_name       String?
-  rfc             String?
-  email           String    @unique
-  emailVerified   Boolean?
-  phone           String?   @unique
-  entreprise_name String?
-  image           String?
-  password        String
-  accounts        Account[]
-  sessions        Session[]
-  address         Address[]
-  addressId       String?
+  id              String  @id @default(uuid())
+  facturapi_id    String? @unique
+  facturapi_token String? @unique
+  api_token       String? @unique
+
+  name             String?
+  maternal_name    String?
+  last_name        String?
+  rfc              String?
+  email            String      @unique
+  emailVerified    Boolean?    @default(false)
+  phone            String?     @unique
+  entreprise_name  String?
+  image            String?
+  password         String
+  available_folios Int?        @default(0)
+  accounts         Account[]
+  sessions         Session[]
+  address          Address?
+  addressId        String?
+  customers        Customers[]
+  customersId      String[]
+  products         Products[]
+  productsIds      String[]
+}
+
+model Products {
+  id           String            @id @default(uuid())
+  facturapi_id String
+  sku          String
+  description  String
+  product_key  String
+  price        Decimal
+  user_id      String
+  user         User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Customers {
+  id           String            @id @default(uuid())
+  facturapi_id String
+  legal_name   String
+  tax_id       String
+  tax_system   String
+  email        String
+  phone        String?
+  user_id      String
+  user         User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Address {
   id           String            @id @default(uuid())
   street       String
   exterior     String
-  interior     String
+  interior     String?
   neighborhood String
-  city         String
   municipality String
   zip          String
   state        String
-  country      String
-  userId       String
-  user         User_Organization @relation(fields: [userId], references: [id], onDelete: Cascade)
+  country      String            @default("MEX")
+  user_id      String            @unique
+  user         User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
-

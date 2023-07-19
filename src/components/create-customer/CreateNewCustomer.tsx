@@ -12,13 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import { Customer } from "./types";
-import { postNewCustomer } from "@/services/customers";
 import { useToast } from "../ui/use-toast";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
 import GoBack from "../commons/GoBack";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 
 const CreateNewCustomer = () => {
@@ -334,7 +332,6 @@ const CreateNewCustomer = () => {
           </div>
         </form>
       </Form>
-      <button onClick={() => signOut()}>sign out</button>
     </section>
   );
 };

@@ -37,16 +37,15 @@ export default NextAuth({
   ],
   callbacks: {
     jwt: async ({ token, user, trigger }) => {
-      console.log(token, 'el token')
       const {name, email, picture, sub, ...result} = token
       if (user) {
+        // @ts-ignore
         result.data = user;
       }
       if (trigger === "update") {
         // const response = await getUserSessionDataSSR({ id: token.user.slug, token: token.user.token })
         // token.user = response
       }
-    
       return result
     },
     session: async ({ session, token }: any) => {
