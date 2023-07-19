@@ -32,6 +32,10 @@ interface SessionUser {
   sessions: any;
   address: Address;
   accessToken: string;
+  _count: {
+    customers: number
+    products: number
+  }
 }
 
 declare module "next-auth" {

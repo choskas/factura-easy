@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Form,
   FormDescription,
@@ -14,47 +14,80 @@ import { Controller, useForm } from "react-hook-form";
 import { Customer } from "./types";
 import { useToast } from "../ui/use-toast";
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
 import GoBack from "../commons/GoBack";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { TAX_REGIME } from "@/lib/constants/catalogs";
+import CustomSelect from "../commons/custom-select";
 
 const CreateNewCustomer = () => {
-  const session = useSession()
+  const session = useSession();
   const form = useForm<Customer>();
   const { toast } = useToast();
   const [isDisabledButton, setIsDisabledButton] = useState(false);
+  const [taxSystem, setTaxSystem] = useState("");
+  const [isErrorTaxSystem, setIsErrorTaxSystem] = useState(false);
+
+  const handleExtraErrors = () => {
+    if (!taxSystem) {
+      setIsErrorTaxSystem(true);
+      return true;
+    }
+  };
+
+  const resetForm = () => {
+    form.reset({
+      legal_name: "",
+      tax_id: "",
+      email: "",
+      phone: "",
+      address: {
+        street: "",
+        exterior: "",
+        interior: "",
+        neighborhood: "",
+        city: "",
+        municipality: "",
+        zip: "",
+        state: "",
+        country: "",
+      },
+    });
+    setTaxSystem("");
+  };
+
   const onSubmit = async (values: Customer) => {
     try {
-      setIsDisabledButton(true)
-      // await postNewCustomer(values);
+      setIsDisabledButton(true);
+      const data = { ...values, tax_system: taxSystem };
+      if (handleExtraErrors()) return;
+      await axios.post("/api/clients", data);
+      resetForm();
       toast({ description: "Se ha añadido un nuevo cliente" });
     } catch (error) {
       return error;
     } finally {
-      setIsDisabledButton(false)
+      setIsDisabledButton(false);
     }
   };
 
-  const getUsers = async() =>{
-    if (session.data){
-    const response = await axios.get(`/api/clients/?id=${session.data.id}`)
-    }
-  }
+  // const getUsers = async() =>{
+  //   if (session.data){
+  //   const response = await axios.get(`/api/clients/?id=${session.data.id}`)
+  //   }
+  // }
 
-  useEffect(() => {
-    getUsers()
-  },[session])
+  // useEffect(() => {
+  //   getUsers()
+  // },[session])
   return (
     <section className="w-full px-[32px]">
-      <GoBack />
-      <h2 className="font-title text-center my-[24px]">
-        Nuevo cliente
-      </h2>
+      <GoBack to="/dashboard" />
+      <h2 className="font-title text-center my-[24px]">Nuevo cliente</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <div className="grid grid-cols-4 gap-[16px]">
-            <div className="col-span-4 md:col-span-2" >
+            <div className="col-span-4 md:col-span-2">
               <FormField
                 control={form.control}
                 name="legal_name"
@@ -98,21 +131,32 @@ const CreateNewCustomer = () => {
                 )}
               />
               <FormField
-                control={form.control}
                 name="tax_system"
                 render={({ field }) => (
                   <FormItem className="mb-[24px] md:mb-0">
-                    <FormLabel>Clave de régimen fiscal:</FormLabel>
+                    <FormLabel
+                      className={
+                        isErrorTaxSystem ? "text-red-500 dark:text-red-900" : ""
+                      }
+                    >
+                      Clave de régimen fiscal:
+                    </FormLabel>
                     <Controller
                       name="tax_system"
-                      control={form.control}
-                      rules={{ required: true }}
-                      render={({ field }) => <Input {...field} />}
+                      render={({ field }) => (
+                        <CustomSelect
+                          value={taxSystem}
+                          options={TAX_REGIME}
+                          onChange={(currentValue) => {
+                            setIsErrorTaxSystem(false);
+                            setTaxSystem(currentValue);
+                          }}
+                        />
+                      )}
                     />
 
                     <FormDescription className="text-red-500 dark:text-red-900">
-                      {form.formState.errors.legal_name &&
-                        "El campo es requerido"}
+                      {isErrorTaxSystem && "El campo es requerido"}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -318,17 +362,18 @@ const CreateNewCustomer = () => {
               </div>
             </div>
           </div>
-          <div className="flex justify-end"> 
-          <Button
-            disabled={isDisabledButton}
-            className="uppercase w-full mb-[24px]"
-            type="submit"
-          >
-            {isDisabledButton && (
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Guardar cliente
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              disabled={isDisabledButton}
+              className="uppercase w-full mb-[24px]"
+              onClick={handleExtraErrors}
+              type="submit"
+            >
+              {isDisabledButton && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Guardar cliente
+            </Button>
           </div>
         </form>
       </Form>

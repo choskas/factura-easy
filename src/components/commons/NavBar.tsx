@@ -4,7 +4,7 @@ import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Popover } from "@/components/ui/popover";
-import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PersonIcon } from "@radix-ui/react-icons";
 import { Card } from "../ui/card";
 import { signOut, useSession } from "next-auth/react";
@@ -40,11 +40,11 @@ const NavBar = () => {
               <PersonIcon className="cursor-pointer" color="white" width={24} height={24} />
             </PopoverTrigger>
             <PopoverContent className="w-[120px]">
-              <Card className="mr-[24px] p-[8px] mt-[18px] w-[120px]">
+            
                 <p onClick={() => signOut()} className="font-caption cursor-pointer">
                   Cerrar sesión
                 </p>
-              </Card>
+      
             </PopoverContent>
           </Popover>
         )}

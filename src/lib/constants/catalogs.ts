@@ -73,7 +73,7 @@ export const TAX_REGIME = [
     { value: "605", name: "Sueldos y Salarios e Ingresos Asimilados a Salarios" },
     { value: "606", name: "Arrendamiento" },
     { value: "608", name: "Demás ingresos" },
-    { value: "609", name: "Consolidación" },
+    // { value: "609", name: "Consolidación" },
     { value: "610", name: "Residentes en el Extranjero sin Establecimiento Permanente en México" },
     { value: "611", name: "Ingresos por Dividendos (socios y accionistas)" },
     { value: "612", name: "Personas Físicas con Actividades Empresariales y Profesionales" },

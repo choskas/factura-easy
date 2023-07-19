@@ -29,6 +29,7 @@ const LoginForm = () => {
   const [isDisabledButton, setIsDisabledButton] = useState(false);
   const onSubmit = async (data: LoginForm) => {
     try {
+      setIsDisabledButton(true)
       const response = await signIn("credentials", {
         ...data,
         redirect: false,
@@ -37,7 +38,10 @@ const LoginForm = () => {
         return toast({ title: "El email o la contraseña son incorrectos." });
       router.push("/dashboard");
     } catch (error) {
+      toast({title: "EL usuario o contraseña son incorrectos."})
       return;
+    } finally {
+      setIsDisabledButton(false)
     }
   };
   return (
@@ -95,7 +99,7 @@ const LoginForm = () => {
           {isDisabledButton && (
             <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
           )}
-          Continuar
+          Entrar
         </Button>
       </form>
       <section className="my-[24px] flex flex-col items-center">

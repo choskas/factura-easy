@@ -60,7 +60,7 @@ export default function Home() {
         <CustomCard
           title="Clientes"
           description="Consulta cuántos clientes has dado de alta en tu plataforma"
-          number={52}
+          number={session.data?._count.customers as number}
           numberDescription="Clientes"
           linkIcon={
             <OpenInNewWindowIcon color="#077DBF" className="mr-[8px]" />
@@ -79,7 +79,7 @@ export default function Home() {
         <CustomCard
           title="Productos y servicios"
           description="Consulta y crea servicios y/o productos que ofrece tu negocio"
-          number={3}
+          number={session.data?._count.products as number}
           numberDescription="Productos cargados"
           linkIcon={
             <OpenInNewWindowIcon color="#077DBF" className="mr-[8px]" />
