@@ -1,5 +1,6 @@
 import { signJwtAccessToken } from "@/lib/jwt";
 import prisma from "@/lib/prisma";
+import { GET_USER_BY_ID } from "@/lib/querys";
 import * as bcrypt from "bcrypt";
 
 interface RequestSignInBody {
@@ -14,39 +15,7 @@ export async function POST(req: Request) {
     where: {
       email: body.email,
     },
-    select: {
-      id: true,
-      facturapi_id: true,
-      api_token: true,
-      name: true,
-      maternal_name: true,
-      last_name: true,
-      rfc: true,
-      email: true,
-      emailVerified: true,
-      image: true,
-      facturapi_token: true,
-      available_folios: true,
-      _count: {
-        select: {
-          customers: true,
-          products: true,
-        },
-      },
-      address: {
-        select: {
-          street: true,
-          exterior: true,
-          interior: true,
-          neighborhood: true,
-          municipality: true,
-          zip: true,
-          state: true,
-          country: true,
-        },
-      },
-      password: true,
-    },
+    select: GET_USER_BY_ID
   });
 
   if (user && (await bcrypt.compare(body.password, user.password))) {

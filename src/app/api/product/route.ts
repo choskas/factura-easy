@@ -79,6 +79,8 @@ export async function DELETE(req: any) {
     headers: { Authorization: `Bearer ${session.data.facturapi_token}` },
   });
 
+  await prisma.products.deleteMany({where: {facturapi_id: body.product_id}})
+
   return NextResponse.json({
     status: 200,
     message: "ok",

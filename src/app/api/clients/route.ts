@@ -21,6 +21,7 @@ export async function GET(req: any, res: Response) {
 }
 
 export async function POST(req: any, res: Response) {
+  try {
   const session = await getToken({ req });
 
   const body: RequestCustomer = await req.json();
@@ -42,7 +43,29 @@ export async function POST(req: any, res: Response) {
     },
   });
 
-  console.log(customerPrismaResponse);
-
   return NextResponse.json({ status: 200, message: "ok", customers: customers.data });
+} catch (error: any) {
+  if (error.response.data){
+  return NextResponse.json({message: "", ...error.response.data }, {status: 400});
+  }
+  return NextResponse.json({message: "", data: {path: '500', message: 'Error de servidor'} }, {status: 500});
+}
+}
+
+export async function DELETE(req: any) {
+  const session = await getToken({ req });
+  const body = await req.json();
+  if (!session)
+    return NextResponse.json({ message: "Unauthorizaed" }, { status: 401 });
+
+  await facturaApiInstance.delete(`customers/${body.client_id}`, {
+    headers: { Authorization: `Bearer ${session.data.facturapi_token}` },
+  });
+
+  await prisma.customers.deleteMany({where: {facturapi_id: body.client_id}})
+
+  return NextResponse.json({
+    status: 200,
+    message: "ok",
+  });
 }

@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import axios from "axios";
+import {GET_USER_BY_ID_NO_PASS} from '@/lib/querys'
 
 export default NextAuth({
   // @ts-ignore
@@ -22,7 +23,7 @@ export default NextAuth({
       },
       authorize: async (credentials, request) => {
         try {
-          const res = await axios.post("http://localhost:3000/api/login", {
+          const res = await axios.post(`${process.env.NEXTAUTH_URL}/api/login`, {
             email: credentials?.email,
             password: credentials?.password,
           });
@@ -43,8 +44,10 @@ export default NextAuth({
         result.data = user;
       }
       if (trigger === "update") {
-        // const response = await getUserSessionDataSSR({ id: token.user.slug, token: token.user.token })
-        // token.user = response
+        const newData = await prisma.user_Organization.findFirst({where: {id: result.data.id}, select: GET_USER_BY_ID_NO_PASS })
+        // @ts-ignore
+        result.data = newData
+
       }
       return result
     },

@@ -12,29 +12,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import { useToast } from "../../ui/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Card } from "@/components/ui/card";
 import GoBack from "../../commons/GoBack";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { Product } from "./types";
 import { Checkbox } from "../../ui/checkbox";
+import { useRouter } from "next/navigation";
 
 const CreateNewProduct = () => {
   const form = useForm<Product>();
+  const { update } = useSession();
   const { toast } = useToast();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [isDisabledButton, setIsDisabledButton] = useState(false);
-  const [taxIncluded, setTaxIncluded] = useState(false)
+  const [taxIncluded, setTaxIncluded] = useState(false);
   const onSubmit = async (values: Product) => {
     try {
-      const {tax_included, ...result} = values
+      const { tax_included, ...result } = values;
       setIsDisabledButton(true);
-      await axios.post('/api/product', {...result, taxIncluded})
-      form.reset({sku: '', price: '', product_key: '', tax_included: false, description: ''})
-      setTaxIncluded(false)
+      await axios.post("/api/product", { ...result, taxIncluded });
+      setTaxIncluded(false);
+      await update();
+      startTransition(() => {
+        router.refresh();
+      });
+      form.reset({
+        sku: "",
+        price: "",
+        product_key: "",
+        tax_included: false,
+        description: "",
+      });
+      
       toast({ description: "Se ha añadido un nuevo producto" });
     } catch (error: any) {
-      toast({title: error.response.data.message})
+      toast({ title: error.response.data.message });
       return error;
     } finally {
       setIsDisabledButton(false);
@@ -43,7 +58,7 @@ const CreateNewProduct = () => {
 
   return (
     <section className="w-full px-[32px]">
-      <GoBack />
+      <GoBack to="/dashboard" />
       <h2 className="font-title text-center my-[24px]">Nuevo producto</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -56,7 +71,6 @@ const CreateNewProduct = () => {
                   <FormItem className="mb-[24px] md:mb-0">
                     <FormLabel>SKU:</FormLabel>
                     <Controller
-
                       name="sku"
                       control={form.control}
                       rules={{ required: true }}
@@ -132,7 +146,11 @@ const CreateNewProduct = () => {
                       rules={{ required: false }}
                       render={({ field }) => (
                         <div className="flex items-center space-x-2">
-                          <Checkbox id="iva" checked={taxIncluded}  onCheckedChange={(e: boolean) => setTaxIncluded(e)} />
+                          <Checkbox
+                            id="iva"
+                            checked={taxIncluded}
+                            onCheckedChange={(e: boolean) => setTaxIncluded(e)}
+                          />
                           <label
                             htmlFor="iva"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

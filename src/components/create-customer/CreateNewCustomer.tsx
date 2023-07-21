@@ -13,17 +13,21 @@ import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import { Customer } from "./types";
 import { useToast } from "../ui/use-toast";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import GoBack from "../commons/GoBack";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { TAX_REGIME } from "@/lib/constants/catalogs";
 import CustomSelect from "../commons/custom-select";
+import { useRouter } from "next/navigation";
 
 const CreateNewCustomer = () => {
   const session = useSession();
   const form = useForm<Customer>();
   const { toast } = useToast();
+  const { update } = useSession()
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [isDisabledButton, setIsDisabledButton] = useState(false);
   const [taxSystem, setTaxSystem] = useState("");
   const [isErrorTaxSystem, setIsErrorTaxSystem] = useState(false);
@@ -63,23 +67,30 @@ const CreateNewCustomer = () => {
       if (handleExtraErrors()) return;
       await axios.post("/api/clients", data);
       resetForm();
+      update()
+      startTransition(() => {
+        router.refresh();
+      });
       toast({ description: "Se ha añadido un nuevo cliente" });
-    } catch (error) {
+
+    } catch (error: any) {
+      let title = "Error de servidor.";
+      if (error.response.data.message.includes("email")) {
+        title = "El email no es válido";
+      }
+      if (error.response.data.message.includes("RFC")) {
+        title = "El RFC no es válido";
+      }
+      if (error.response.data.message.includes("postal")) {
+        title = "El código postal no es válido";
+      }
+      toast({ title });
       return error;
     } finally {
       setIsDisabledButton(false);
     }
   };
 
-  // const getUsers = async() =>{
-  //   if (session.data){
-  //   const response = await axios.get(`/api/clients/?id=${session.data.id}`)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getUsers()
-  // },[session])
   return (
     <section className="w-full px-[32px]">
       <GoBack to="/dashboard" />

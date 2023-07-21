@@ -45,12 +45,18 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model User_Organization {
-  id              String  @id @default(uuid())
-  facturapi_id    String? @unique
-  facturapi_token String? @unique
-  api_token       String? @unique
+enum Status {
+  IN_VALIDATION
+  VALIDATED
+  SUSPENDED
+}
 
+model User_Organization {
+  id               String      @id @default(uuid())
+  facturapi_id     String?     @unique
+  facturapi_token  String?     @unique
+  api_token        String?     @unique
+  status           Status      @default(IN_VALIDATION)
   name             String?
   maternal_name    String?
   last_name        String?

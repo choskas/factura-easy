@@ -12,10 +12,17 @@ export interface Address {
   userId: string;
 }
 
+export enum Status {
+  IN_VALIDATION = 'IN_VALIDATION',
+  VALIDATED = 'VALIDATED',
+  SUSPENDED = 'SUSPENDED',
+}
+
 interface SessionUser {
   id: string;
   facturapi_id: string;
   facturapi_token: string;
+  status: Status;
   available_folios: number;
   api_token: string;
   name: string;

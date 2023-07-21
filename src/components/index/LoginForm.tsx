@@ -17,6 +17,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "../ui/use-toast";
 import Link from "next/link";
+import { EMAIL_REGEX } from "@/lib/constants/regex";
 
 type LoginForm = {
   email: string;
@@ -44,6 +45,7 @@ const LoginForm = () => {
       setIsDisabledButton(false)
     }
   };
+  console.log(form.formState.errors.email)
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -56,15 +58,19 @@ const LoginForm = () => {
               <Controller
                 name="email"
                 control={form.control}
-                rules={{ required: true }}
+                rules={{   required: {
+                  value: true,
+                  message: 'El campo es requerido.',
+                },
+                  pattern: {
+                    value: EMAIL_REGEX,
+                    message: 'El email no es válido.',
+                  },
+                }}
                 render={({ field }) => (
                   <Input autoComplete="email" {...field} />
                 )}
               />
-
-              <FormDescription className="text-red-500 dark:text-red-900">
-                {form.formState.errors.email && "El campo es requerido"}
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -78,15 +84,14 @@ const LoginForm = () => {
               <Controller
                 name="password"
                 control={form.control}
-                rules={{ required: true }}
+                rules={{ required: {
+                  value: true,
+                  message: 'La contraseña es requerida.',
+                }, }}
                 render={({ field }) => (
                   <Input autoComplete="password" type="password" {...field} />
                 )}
               />
-
-              <FormDescription className="text-red-500 dark:text-red-900">
-                {form.formState.errors.password && "El campo es requerido"}
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

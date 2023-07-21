@@ -16,6 +16,8 @@ import axios, { AxiosError } from "axios";
 import GoBack from "../commons/GoBack";
 import { CustomerAddress } from "../create-customer/types";
 import { toast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
+import { EMAIL_REGEX, PASSWORD_REGEX } from "@/lib/constants/regex";
 
 type RegisterForm = {
   email: string;
@@ -30,11 +32,13 @@ type RegisterForm = {
 
 const RegisterForm = () => {
   const form = useForm<RegisterForm>();
+  const router = useRouter()
   const [isDisabledButton, setIsDisabledButton] = useState(false);
   const onSubmit = async (data: RegisterForm) => {
     try{
       setIsDisabledButton(true)
-    const result = await axios.post("/api/register", data);
+    const result = await axios.post("/api/register", data);+
+    router.push('/register/completed')
     } catch (error: any){
       toast({title: error.response.data.message, description: 'Regresa a inicio y trata de iniciar sesión'})
 
@@ -43,6 +47,7 @@ const RegisterForm = () => {
       setIsDisabledButton(false)
     }
   };
+  const password = form.watch('password')
   return (
     <section className="w-full">
       <Form {...form}>
@@ -52,6 +57,15 @@ const RegisterForm = () => {
               <FormField
                 control={form.control}
                 name="email"
+                rules={{   required: {
+                  value: true,
+                  message: 'El campo es requerido.',
+                },
+                  pattern: {
+                    value: EMAIL_REGEX,
+                    message: 'El email no es válido.',
+                  },
+                }}
                 render={({ field }) => (
                   <FormItem className="mb-[24px] md:mb-0">
                     <FormLabel>Email:</FormLabel>
@@ -61,10 +75,6 @@ const RegisterForm = () => {
                       rules={{ required: true }}
                       render={({ field }) => <Input autoComplete="new-email" {...field} />}
                     />
-
-                    <FormDescription className="text-red-500 dark:text-red-900">
-                      {form.formState.errors.email && "El campo es requerido"}
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -72,6 +82,15 @@ const RegisterForm = () => {
               <FormField
                 control={form.control}
                 name="password"
+                rules={{   required: {
+                  value: true,
+                  message: 'El campo es requerido.',
+                },
+                  pattern: {
+                    value: PASSWORD_REGEX,
+                    message: 'La contraseña debe contener al menos 1 letra mayúscula, 1 minuscula, un número y 8 caracteres.',
+                  },
+                }}
                 render={({ field }) => (
                   <FormItem className="mb-[24px] md:mb-0">
                     <FormLabel>Contraseña:</FormLabel>
@@ -83,11 +102,6 @@ const RegisterForm = () => {
                         <Input autoComplete="new-password" type="password" {...field} />
                       )}
                     />
-
-                    <FormDescription className="text-red-500 dark:text-red-900">
-                      {form.formState.errors.password &&
-                        "El campo es requerido"}
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -95,6 +109,10 @@ const RegisterForm = () => {
               <FormField
                 control={form.control}
                 name="passwordConfirm"
+                rules={{
+                  required: 'Please confirm your password',
+                  validate: (value) => value === password || 'La contraseña no coincide.',
+                }}
                 render={({ field }) => (
                   <FormItem className="mb-[24px] md:mb-0">
                     <FormLabel>Repite la contraseña:</FormLabel>
@@ -106,11 +124,6 @@ const RegisterForm = () => {
                         <Input type="password" autoComplete="repeat-password" {...field} />
                       )}
                     />
-
-                    <FormDescription className="text-red-500 dark:text-red-900">
-                      {form.formState.errors.passwordConfirm &&
-                        "El campo es requerido"}
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
