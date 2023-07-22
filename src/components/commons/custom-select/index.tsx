@@ -15,26 +15,43 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { CustomSelectProps } from "./types";
 
-const CustomSelect = ( {options, onChange, value }: CustomSelectProps) => {
+const CustomSelect = ({ options, onChange, value }: CustomSelectProps) => {
   const [isOpenPopover, setIsOpenPopover] = useState(false);
+  const [currentOptions, setCurrentOptions] = useState(options);
 
   return (
     <Popover open={isOpenPopover} onOpenChange={setIsOpenPopover}>
       <PopoverTrigger asChild>
         <Input
-
           value={
             value ? options.find((item) => item.value === value)?.name : ""
           }
         />
       </PopoverTrigger>
       <PopoverContent>
-        <Command>
-          <CommandInput className="w-full" placeholder="Clave" />
+        <Command
+          filter={(value, search) => {
+            const seek = options.filter((item) => {
+              if (item.name.toLowerCase().includes(search)) {
+                return item;
+              }
+            });
+            if (seek) {
+              setCurrentOptions(seek);
+              return 1;
+            }
+            if (search === ''){
+              setCurrentOptions(options)
+               return 1}
+
+            return 0;
+          }}
+        >
+          <CommandInput className="w-full" placeholder="" />
           <CommandList>
             <CommandEmpty>Sin resultados.</CommandEmpty>
 
-            {options.map((item) => (
+            {currentOptions.map((item) => (
               <CommandItem
                 key={item.name}
                 onSelect={(currentValue) => {

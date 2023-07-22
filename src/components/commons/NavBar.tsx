@@ -23,7 +23,7 @@ const NavBar = () => {
   }, []);
   if (!clientRender) return;
   return (
-    <nav className="fixed h-[64px] flex justify-between w-full px-[24px] py-[22px] bg-black dark:bg-black">
+    <nav className="fixed h-[64px] z-10 flex justify-between w-full px-[24px] py-[22px] bg-black dark:bg-black">
       <p
         onClick={() => router.push("/")}
         className="font-nav-title text-white dark:text-white"

@@ -29,7 +29,7 @@ const useCreateInvoice = (products: ProductsFacturAPI[], customers: CustomersFac
   
     const selectClient = (item: CustomersFacturAPI) => {
       setCustomer(item);
-      toast({ title: `Facturaremos a nombre de ${item.legal_name}` });
+      toast({ title: `Facturaremos a ${item.legal_name}` });
       onContinue("products");
     };
   
@@ -88,11 +88,11 @@ const useCreateInvoice = (products: ProductsFacturAPI[], customers: CustomersFac
       setProductsState(results.data.products);
     };
 
-    const onSliderValueChange = (e: Array<number>, item: ProductsWithQuantity) => {
+    const onChangeQuantity = (e: number, item: ProductsWithQuantity) => {
         const newArr: ProductsWithQuantity[] = selectedItems.map(
             (pd) => {
               if (pd.id === item.id) {
-                pd.quantity = e[0];
+                pd.quantity = e;
               }
               return pd;
             }
@@ -131,7 +131,7 @@ const useCreateInvoice = (products: ProductsFacturAPI[], customers: CustomersFac
     selectedItems,
     paymentMethod,
     CFDIUse,
-    onSliderValueChange
+    onChangeQuantity
   }
 }
 

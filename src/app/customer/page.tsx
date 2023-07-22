@@ -19,6 +19,7 @@ const CustomerPage = async () => {
     return (
         <main className="flex min-h-screen flex-col dark:bg-zinc-950 bg-whited p-[24px]">
             <GoBack />
+            <h2 className="font-title text-center mb-[24px]">Clientes</h2>
        <CustomerCards data={data} />
 
         </main>

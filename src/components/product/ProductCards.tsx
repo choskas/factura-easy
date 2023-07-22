@@ -1,7 +1,6 @@
 "use client";
 
 import { ProductsFacturAPI } from "@/lib/types/facturapiTypes";
-import ProductCard from "./ProductCard";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "../ui/use-toast";
@@ -10,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EmptyItems from "../commons/EmptyItems";
+import ClientCard from "../commons/client-card";
+import ProductCard from "../commons/product-card";
 
 const ProductCards = ({ data }: { data: ProductsFacturAPI[] }) => {
   const { update } = useSession();
@@ -42,12 +43,17 @@ const ProductCards = ({ data }: { data: ProductsFacturAPI[] }) => {
     );
   return (
     <>
+    <h2 className="font-title text-center mb-[24px]">Productos y servicios</h2>
       {data.map((item) => (
         <ProductCard
           key={item.id}
-          product={item}
-          onDelete={() => onDelete(item.id)}
-          isDisabledButton={isDisabledButton}
+          productKey={item.product_key}
+          sku={item.sku} 
+          price={item.price} 
+          description={item.description} 
+          onDelete={() => {}} 
+          buttonText='Ver prodcuto'
+          onClick={() => {}}
         />
       ))}
     </>

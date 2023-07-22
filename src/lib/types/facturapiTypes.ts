@@ -1,3 +1,5 @@
+import { Address } from "./next-auth";
+
 export interface ProductsFacturAPI {
   _id: string;
   organization: string;
@@ -26,7 +28,7 @@ export interface CustomersFacturAPI {
   legal_name: string;
   email: string;
   phone: string;
-  address: any;
+  address: Address;
   __v: number;
   id: string;
 }

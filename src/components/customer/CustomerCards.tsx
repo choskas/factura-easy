@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "../ui/use-toast";
 import EmptyItems from "../commons/EmptyItems";
+import { Trash } from "lucide-react";
+import ClientCard from "../commons/client-card";
 
 const CustomerCards = ({ data }: { data: CustomersFacturAPI[] }) => {
     const router = useRouter()
@@ -47,13 +49,15 @@ const CustomerCards = ({ data }: { data: CustomersFacturAPI[] }) => {
   return (
     <>
       {data.map((item) => (
-        <Card key={item.id}>
-          <p>{item.legal_name}</p>
-          <p>{item.email}</p>
-          <Button variant="destructive" onClick={() => onDelete(item.id)}>  {isDisabledButton && (
-            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-          )}Eliminar</Button>
-        </Card>
+        <ClientCard 
+        key={item.id}
+        title={item.legal_name}
+        subtitle={item.tax_id}
+        description={item.email}
+        onDelete={() => {}}
+        buttonText="Ver cliente"
+        onClick={() => {}}
+        />
       ))}
     </>
   );

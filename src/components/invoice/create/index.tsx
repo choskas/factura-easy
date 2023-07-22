@@ -6,9 +6,6 @@ import {
 } from "@/lib/types/facturapiTypes";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import EmptyItems from "@/components/commons/EmptyItems";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,14 +15,14 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
-import { toast } from "@/components/ui/use-toast";
 import { Check, PlusCircle } from "lucide-react";
-import axios from "axios";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import Paginator from "@/components/commons/Paginator";
 import useCreateInvoice from "@/hooks/invoice/useCreateInvoice";
 import CustomSelect from "@/components/commons/custom-select";
-import { CFDI_USER, PAYMENT_METHOD, PAYMENT_TYPE } from "@/lib/constants/catalogs";
+import { CFDI_USER, PAYMENT_TYPE } from "@/lib/constants/catalogs";
+import ClientCard from "@/components/commons/client-card";
+import ProductCard from "@/components/commons/product-card";
 import { FormLabel } from "@/components/ui/form";
 
 export type Step = "customers" | "products" | "counter" | "extra-info" | "";
@@ -43,25 +40,27 @@ const InvoiceAccordionsSteps = ({
   totalPagesCustomers: number;
   totalPagesProducts: number;
 }) => {
-    const {    onClearFilters,
-        onGetNewData,
-        onSearch,
-        onReset,
-        selectClient,
-        onClickProduct,
-        onContinue,
-        onSliderValueChange,
-        onFinish,
-        onSelectCFDIUse,
-        onSelectPaymentMethod,
-        customersState,
-        productsState,
-        isDisabledButton,
-        step,
-        customer,
-        paymentMethod,
-        CFDIUse,
-        selectedItems} = useCreateInvoice(products, customers)
+  const {
+    onClearFilters,
+    onGetNewData,
+    onSearch,
+    onReset,
+    selectClient,
+    onClickProduct,
+    onContinue,
+    onChangeQuantity,
+    onFinish,
+    onSelectCFDIUse,
+    onSelectPaymentMethod,
+    customersState,
+    productsState,
+    isDisabledButton,
+    step,
+    customer,
+    paymentMethod,
+    CFDIUse,
+    selectedItems,
+  } = useCreateInvoice(products, customers);
   if (customersState.length === 0)
     return (
       <EmptyItems
@@ -97,7 +96,7 @@ const InvoiceAccordionsSteps = ({
                     name="search"
                     placeholder="Email o RFC"
                   />
-                  <Button className="uppercase mt-[12px] w-full" type="submit">
+                  <Button className="uppercase my-[12px] w-full" type="submit">
                     {isDisabledButton && (
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                     )}
@@ -106,20 +105,14 @@ const InvoiceAccordionsSteps = ({
                 </form>
               </div>
               {customersState.map((item) => (
-                <Card
+                <ClientCard
                   key={item.id}
-                  className="p-[24px] flex flex-col items-center my-[24px]"
-                >
-                  <p className="font-description">{item.legal_name}</p>
-                  <p className="font-caption mb-[12px]">{item.email}</p>
-                  <Button
-                    variant="outline"
-                    className="w-full uppercase"
-                    onClick={() => selectClient(item)}
-                  >
-                    <Check className="mr-[8px]" size={20} /> Seleccionar{" "}
-                  </Button>
-                </Card>
+                  title={item.legal_name}
+                  subtitle={item.tax_id}
+                  description={item.email}
+                  buttonText="Seleccionar"
+                  onClick={() => selectClient(item)}
+                />
               ))}
               <Paginator
                 onChange={async (currentPage) => {
@@ -151,27 +144,30 @@ const InvoiceAccordionsSteps = ({
                     type="text"
                     placeholder="SKU"
                   />
-                  <Button className="uppercase mt-[12px] w-full" type="submit">
+                  <Button className="uppercase my-[12px] w-full" type="submit">
                     Buscar
                   </Button>
                 </form>
               </div>
               {productsState.map((item) => (
-                <Card
+                <ProductCard
                   key={item.id}
-                  className="p-[24px] flex flex-col items-center my-[24px]"
-                >
-                  <p className="font-description">{item.sku}</p>
-                  <p className="font-caption">{item.description}</p>
-                  <Button
-                    variant="outline"
-                    onClick={() => onClickProduct(item)}
-                    className="w-full mt-[12px]"
-                  >
-                    <PlusCircle className="mr-[8px]" size={24} />
-                    Agregar Producto
-                  </Button>
-                </Card>
+                  productKey={item.product_key}
+                  sku={item.sku}
+                  price={item.price}
+                  description={item.description}
+                  buttonText={
+                    selectedItems.find((prd) => prd.id === item.id)
+                      ? "Seleccionado"
+                      : "Seleccionar"
+                  }
+                  onClick={() => onClickProduct(item)}
+                  isDisabledButton={
+                    selectedItems.find((prd) => prd.id === item.id)
+                      ? true
+                      : false
+                  }
+                />
               ))}
               <Paginator
                 onChange={async (currentPage) => {
@@ -180,7 +176,7 @@ const InvoiceAccordionsSteps = ({
                 totalPages={totalPagesProducts}
               />
               <Button
-                disabled={selectedItems.length > 0 ? false : true } 
+                disabled={selectedItems.length > 0 ? false : true}
                 className="uppercase w-full"
                 onClick={() => onContinue("counter")}
               >
@@ -196,32 +192,32 @@ const InvoiceAccordionsSteps = ({
           <AccordionContent>
             <>
               {selectedItems.map((item) => (
-                <Card
-                  key={item.id}
-                  className="p-[24px] flex flex-col items-center my-[24px]"
-                >
-                  <p className="font-description">{item.sku}</p>
-                  <p className="font-caption">{item.description}</p>
-                  <p className="font-description mb-[12px]">{item.quantity}</p>
-                  <Slider
-                    value={[item.quantity]}
-                    onValueChange={(e) => {
-                        onSliderValueChange(e, item)
-                    }}
-                    max={10}
-                    step={1}
-                    className="w-full"
+                    <ProductCard
+                    key={item.id}
+                    productKey={item.product_key}
+                    sku={item.sku}
+                    description={item.description}
+                    customComponent={
+                      <>
+                    <p className="text-caption mt-[24px]">Cantidad:</p>
+                    <Input type="number" onChange={(e) => onChangeQuantity(parseInt(e.target.value), item)} />
+                   </>
+                    }
+                    isDisabledButton={
+                      selectedItems.find((prd) => prd.id === item.id)
+                        ? true
+                        : false
+                    }
                   />
-                </Card>
               ))}
-                 <Button
-                  //@ts-ignore
-                 disabled={selectedItems.find((item) => {
-                  if (item.quantity > 0){
-                    return false
+              <Button
+                //@ts-ignore
+                disabled={selectedItems.find((item) => {
+                  if (item.quantity > 0) {
+                    return false;
                   }
-                  return true
-                 })}
+                  return true;
+                })}
                 className="uppercase w-full"
                 onClick={() => onContinue("extra-info")}
               >
@@ -237,21 +233,40 @@ const InvoiceAccordionsSteps = ({
           <AccordionContent>
             <div className="mb-[12px]">
               <p className="font-description mb-[8px]">Metodo de pago:</p>
-            <CustomSelect options={PAYMENT_TYPE} onChange={(currentValue) => {
-              onSelectPaymentMethod(currentValue.toUpperCase())
-            }} value={paymentMethod} />
+              <CustomSelect
+                options={PAYMENT_TYPE}
+                onChange={(currentValue) => {
+                  onSelectPaymentMethod(currentValue.toUpperCase());
+                }}
+                value={paymentMethod}
+              />
             </div>
             <p className="font-description mb-[8px]">Uso del CFDI:</p>
-            <CustomSelect options={CFDI_USER} onChange={(currentValue) => {
-              onSelectCFDIUse(currentValue.toUpperCase())
-            }} value={CFDIUse} />
+            <CustomSelect
+              options={CFDI_USER}
+              onChange={(currentValue) => {
+                onSelectCFDIUse(currentValue.toUpperCase());
+              }}
+              value={CFDIUse}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <Button disabled={customer && selectedItems[0]?.quantity !== 0 && CFDIUse && paymentMethod  ? false : true} className="w-full mt-[24px]" onClick={onFinish}>
+      <Button
+        disabled={
+          customer &&
+          selectedItems[0]?.quantity !== 0 &&
+          CFDIUse &&
+          paymentMethod
+            ? false
+            : true
+        }
+        className="w-full mt-[24px]"
+        onClick={onFinish}
+      >
         Continuar
       </Button>
-      <Button variant='outline' className="w-full mt-[24px]" onClick={onReset}>
+      <Button variant="outline" className="w-full mt-[24px]" onClick={onReset}>
         Empecemos de nuevo
       </Button>
     </>
