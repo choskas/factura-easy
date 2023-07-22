@@ -8,9 +8,10 @@ interface RequestCustomer extends Customer {}
 
 export async function GET(req: any, res: Response) {
   const session = await getToken({ req });
+  const page = req.nextUrl.searchParams.get("page")
   if (!session)
     return NextResponse.json({ message: "Unauthorizaed" }, { status: 401 });
-  const customers = await facturaApiInstance.get("customers", {
+  const customers = await facturaApiInstance.get(`customers/?page=${page ? page : 1}`, {
     headers: { Authorization: `Bearer ${session.data.facturapi_token}` },
   });
   return NextResponse.json({
@@ -36,9 +37,9 @@ export async function POST(req: any, res: Response) {
       user_id: session.data.id,
       facturapi_id: customers.data.id,
       legal_name: customers.data.legal_name,
-      tax_id: customers.data.tax_id,
+      tax_id: customers.data.tax_id.toUpperCase(),
       tax_system: customers.data.tax_system,
-      email: customers.data.email,
+      email: customers.data.email.toLowerCase(),
       phone: customers.data.phone,
     },
   });

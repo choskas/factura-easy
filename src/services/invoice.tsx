@@ -22,9 +22,12 @@ export const postNewInvoice = async () => {
             price: 1234.56789,
             product_key: "90111800",
             unit_key: "DAY",
+            tax_included: false
           },
         },
       ],
+    }, {
+      headers: { Authorization: `Bearer ${process.env.NEXT_PUBLIC_FACTURA_API_KEY}` }
     });
   
     return response.data;

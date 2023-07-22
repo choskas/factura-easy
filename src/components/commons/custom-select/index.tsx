@@ -34,14 +34,14 @@ const CustomSelect = ( {options, onChange, value }: CustomSelectProps) => {
           <CommandList>
             <CommandEmpty>Sin resultados.</CommandEmpty>
 
-            {TAX_REGIME.map((item) => (
+            {options.map((item) => (
               <CommandItem
                 key={item.name}
                 onSelect={(currentValue) => {
                   setIsOpenPopover(false);
                   onChange(currentValue);
                 }}
-                value={item.value}
+                value={item.value as string}
               >
                 {item.name}
               </CommandItem>

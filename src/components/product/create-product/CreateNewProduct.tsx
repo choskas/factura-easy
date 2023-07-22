@@ -28,7 +28,7 @@ const CreateNewProduct = () => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isDisabledButton, setIsDisabledButton] = useState(false);
-  const [taxIncluded, setTaxIncluded] = useState(false);
+  const [taxIncluded, setTaxIncluded] = useState(true);
   const onSubmit = async (values: Product) => {
     try {
       const { tax_included, ...result } = values;
@@ -155,7 +155,7 @@ const CreateNewProduct = () => {
                             htmlFor="iva"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           >
-                            Incluir IVA
+                            Ya inclui todos los impuestos en mi precio.
                           </label>
                         </div>
                       )}

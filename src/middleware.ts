@@ -10,6 +10,7 @@ const PROTECTED_ROUTES = ["/dashboard", "/customer", "/product"]
 export default withAuth(
   async function middleware(req: NextRequest) {
     const session = await getToken({req})
+
     if (!session) return  NextResponse.redirect(new URL('/', req.url))
     if (PROTECTED_ROUTES.some(route => req.url.includes(route)) && session?.data.status === Status.IN_VALIDATION){
       return NextResponse.redirect(new URL('/register/completed', req.url))

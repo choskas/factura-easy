@@ -45,7 +45,7 @@ const LoginForm = () => {
       setIsDisabledButton(false)
     }
   };
-  console.log(form.formState.errors.email)
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>

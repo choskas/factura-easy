@@ -76,6 +76,8 @@ model User_Organization {
   customersId      String[]
   products         Products[]
   productsIds      String[]
+  invoices         Invoices[]
+  InvoicesIds      String[]
 }
 
 model Products {
@@ -93,7 +95,7 @@ model Customers {
   id           String            @id @default(uuid())
   facturapi_id String
   legal_name   String
-  tax_id       String
+  tax_id       String            @unique
   tax_system   String
   email        String
   phone        String?
@@ -113,4 +115,16 @@ model Address {
   country      String            @default("MEX")
   user_id      String            @unique
   user         User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Invoices {
+  id               String            @id @default(uuid())
+  facturapi_id     String
+  status           String
+  varification_url String?
+  date             String
+  total            Int
+  folio_number     Int
+  user_id          String
+  user             User_Organization @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

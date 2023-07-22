@@ -1,7 +1,11 @@
 import Image from "next/image";
-import LoginForm from "@/components/index/LoginForm";
+import LoginForm from "@/components/home/LoginForm";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import LoginSection from "@/components/home/LoginSection";
 
-export default function Home() {
+export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col dark:bg-zinc-950 bg-whited">
       <section className="w-full h-[240px] relative">
@@ -12,12 +16,7 @@ export default function Home() {
           objectFit="contain"
         />
       </section>
-      <section className="p-[24px]">
-        <h3 className="font-title my-[24px] text-center">Iniciar sesión</h3>
-        <div className="flex flex-col">
-          <LoginForm />
-        </div>
-      </section>
+    <LoginSection />
     </main>
   );
 }

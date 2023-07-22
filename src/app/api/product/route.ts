@@ -32,7 +32,7 @@ export async function POST(req: any, res: Response) {
     const createProduct = await prisma.products.create({
       data: {
         facturapi_id: product.data.id,
-        sku: product.data.sku,
+        sku: product.data.sku.toUpperCase(),
         description: product.data.description,
         product_key: product.data.product_key,
         price: product.data.price,
@@ -57,8 +57,8 @@ export async function GET(req: any) {
   const session = await getToken({ req });
   if (!session)
     return NextResponse.json({ message: "Unauthorizaed" }, { status: 401 });
-
-  const products = await facturaApiInstance.get("products", {
+    const page = req.nextUrl.searchParams.get("page")
+  const products = await facturaApiInstance.get(`products/?page=${page ? page : 1}`, {
     headers: { Authorization: `Bearer ${session.data.facturapi_token}` },
   });
 
