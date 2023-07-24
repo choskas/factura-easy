@@ -9,6 +9,7 @@ interface RequestSignInBody {
 }
 
 export async function POST(req: Request) {
+  try {
   const body: RequestSignInBody = await req.json();
 
   const user = await prisma.user_Organization.findFirst({
@@ -26,5 +27,9 @@ export async function POST(req: Request) {
       accessToken,
     };
     return new Response(JSON.stringify(result));
+    
   }
+} catch (error) {
+  console.log(error, 'error apio')
+}
 }

@@ -27,7 +27,7 @@ export default NextAuth({
             email: credentials?.email,
             password: credentials?.password,
           });
-
+          console.log(res, 'res login')
           const user = await res.data;
         
           if (user) return user;
