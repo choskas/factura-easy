@@ -13,7 +13,7 @@ async function getUsers() {
 const CreateCustomerPage = async () => {
     const data = await getUsers()
     return (
-        <main>
+        <main className="flex min-h-screen flex-col dark:bg-zinc-950 bg-whited p-[24px]">
             <CreateNewCustomer />
         </main>
     )

@@ -5,5 +5,5 @@ export type InvoiceCardProps = {
      buttonText: string
      buttonTextCancel: string
      onClickDetail: () => void
-     onClickCancel: () => void
+     onClickCancel?: (() => void) | null
 }

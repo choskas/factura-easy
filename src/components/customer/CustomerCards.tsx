@@ -58,7 +58,9 @@ const CustomerCards = ({ data }: { data: CustomersFacturAPI[] }) => {
         setCustomerId(item.id)
         }}
         buttonText="Ver cliente"
-        onClick={() => {}}
+        onClick={() => {
+          router.push(`/customer/detail?customerId=${item.id}`)
+        }}
         />
       ))}
       <ModalConfirm isOpen={isOpen} onCancel={() => setIsOpen(false)} onContinue={onDelete} title="¿Desea borrar el cliente?" disableButton={isDisabledButton} />

@@ -17,18 +17,21 @@ const InvoiceCard = ({
       <p className="font-caption text-gray-400 mb-[24px]">
         {subtitle} |<span> {description}</span>
       </p>
-      <Button className="uppercase w-full mb-[24px]" onClick={() => onClickDetail()}>
+      <Button className="uppercase w-full" onClick={() => onClickDetail()}>
         {" "}
         {buttonText}{" "}
       </Button>
+      {onClickCancel && (
       <Button
-        variant="outline"
-        className="uppercase w-full"
-        onClick={() => onClickCancel()}
-      >
-        {" "}
-        {buttonTextCancel}{" "}
-      </Button>
+      variant="outline"
+      className="uppercase w-full mt-[24px]"
+      onClick={() => onClickCancel()}
+    >
+      {" "}
+      {buttonTextCancel}{" "}
+    </Button>
+      )}
+
     </Card>
   );
 };

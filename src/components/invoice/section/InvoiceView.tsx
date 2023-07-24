@@ -10,26 +10,58 @@ import EmptyItems from "@/components/commons/EmptyItems";
 import ModalConfirm from "@/components/commons/modal/ModalConfirm";
 import InvoiceCard from "@/components/commons/invoice-card";
 import facturaApiInstance from "@/services/config/facturaApi";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { title } from "process";
+import { FormLabel } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { CANCEL_MOTIVES } from "@/lib/constants/catalogs";
+import { downloadFromUTF8 } from "@/lib/utils";
 
 const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
   const router = useRouter();
   const session = useSession();
   const { update } = useSession();
+  const form = useForm();
   const [isPending, startTransition] = useTransition();
   const [isDisabledButton, setIsDisabledButton] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [productId, setProductId] = useState<null | string>(null);
-  const onDelete = async () => {
+  const [motive, setMotive] = useState<null | string>(null);
+  const onCancel = async () => {
     try {
       setIsDisabledButton(true);
-      const response = await axios.delete(`/api/product`, {
-        data: {
-          product_id: productId,
+      if (!motive) return toast({ title: "Debes seleccionar un motivo." });
+      const response = await axios.delete(`/api/invoice/cancel`, {
+        params: {
+          invoice_id: productId,
+          motive,
         },
       });
 
-      toast({ title: "Se ha borrado el producto" });
+      toast({ title: response.data.message });
       setIsOpen(false);
+      setMotive(null);
+      setProductId(null);
       await update();
       startTransition(() => {
         router.refresh();
@@ -41,8 +73,24 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
     }
   };
 
-  const onDownload = async (id: string) => {
+  const onDownload = async (id: string, status: string) => {
     try {
+      if (status === "canceled") {
+        const invoice = await facturaApiInstance.get(
+          `invoices/${id}/cancellation_receipt/xml`,
+          {
+            responseType: "blob",
+            headers: {
+              Accept: "application/xml",
+              Authorization: `Bearer ${
+                session.data ? session.data.facturapi_token : ""
+              }`,
+            },
+          }
+        );
+        downloadFromUTF8(invoice.data, `acuse-${id}.xml`);
+        return;
+      }
       const invoice = await facturaApiInstance.get(`invoices/${id}/${"pdf"}`, {
         responseType: "blob",
         headers: {
@@ -52,18 +100,9 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
           }`,
         },
       });
-
-      const blob = new Blob([invoice.data], { type: "application/pdf" });
-
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `factura-${id}.pdf`;
-      link.click();
-      URL.revokeObjectURL(url);
+      downloadFromUTF8(invoice.data, `factura-${id}.pdf`);
     } catch (error) {
-      return error
+      return error;
     }
   };
 
@@ -84,19 +123,57 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
           title={item.customer.legal_name}
           subtitle={`$ ${item.total.toString()}`}
           description={new Date(item.date).toLocaleDateString()}
-          buttonText="Descargar factura"
-          onClickDetail={() => onDownload(item.id)}
+          buttonText={
+            item.status === "canceled" ? "Descargar acuse" : "Descargar factura"
+          }
+          onClickDetail={() => onDownload(item.id, item.status)}
           buttonTextCancel="Cancelar factura"
-          onClickCancel={() => {}}
+          onClickCancel={
+            item.status === "canceled"
+              ? null
+              : () => {
+                  setIsOpen(true);
+                  setProductId(item.id);
+                }
+          }
         />
       ))}
-      <ModalConfirm
-        isOpen={isOpen}
-        onCancel={() => setIsOpen(false)}
-        onContinue={onDelete}
-        title="¿Desea borrar el producto?"
-        disableButton={isDisabledButton}
-      />
+      <AlertDialog open={isOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <p className="text-left">Motivo de cancelación</p>
+            <Select
+              onValueChange={(value) => {
+                setMotive(value);
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {CANCEL_MOTIVES.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onCancel} className="mt-[12px]">
+              Regresar
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={onCancel}>
+              {isDisabledButton && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Continuar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

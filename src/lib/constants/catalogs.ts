@@ -395,6 +395,9 @@ export const CONTRACT_TYPE = [
     { value: "26", name: "Servicios mediante Plataformas Tecnológicas" }
   ]
   
-  
-  
-  
+export const CANCEL_MOTIVES = [
+  { value: "01", name: "Comprobante emitido con errores con relación." },
+  { value: "02", name: "Comprobante emitido con errores sin relación." },
+  { value: "03", name: "No se llevó a cabo la operación." },
+  { value: "04", name: "Operación nominativa relacionada en la factura global." },
+]
