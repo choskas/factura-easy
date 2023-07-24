@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductsFacturAPI } from "@/lib/types/facturapiTypes";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import axios from "axios";
 import { toast } from "../ui/use-toast";
 import { useSession } from "next-auth/react";
@@ -9,24 +9,32 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EmptyItems from "../commons/EmptyItems";
-import ClientCard from "../commons/client-card";
+import CustomerCard from "../commons/client-card";
 import ProductCard from "../commons/product-card";
+import ModalConfirm from "../commons/modal/ModalConfirm";
 
 const ProductCards = ({ data }: { data: ProductsFacturAPI[] }) => {
-  const { update } = useSession();
-  const router = useRouter();
+  const router = useRouter()
+  const { update } = useSession()
+  const [isPending, startTransition] = useTransition()
   const [isDisabledButton, setIsDisabledButton] = useState(false);
-  const onDelete = async (id: string) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [productId, setProductId] = useState<null | string>(null)
+  const onDelete = async () => {
     try {
       setIsDisabledButton(true);
       const response = await axios.delete(`/api/product`, {
         data: {
-          product_id: id,
+          product_id: productId,
         },
       });
 
       toast({ title: "Se ha borrado el producto" });
+      setIsOpen(false)
       await update();
+      startTransition(() => {
+        router.refresh();
+      });
     } catch (error) {
       return error;
     } finally {
@@ -51,11 +59,14 @@ const ProductCards = ({ data }: { data: ProductsFacturAPI[] }) => {
           sku={item.sku} 
           price={item.price} 
           description={item.description} 
-          onDelete={() => {}} 
+          onDelete={() => {setIsOpen(true)
+          setProductId(item.id)
+          }} 
           buttonText='Ver prodcuto'
           onClick={() => {}}
         />
       ))}
+            <ModalConfirm isOpen={isOpen} onCancel={() => setIsOpen(false)} onContinue={onDelete} title="¿Desea borrar el producto?" disableButton={isDisabledButton} />
     </>
   );
 };

@@ -2,33 +2,33 @@
 
 import { CustomersFacturAPI } from "@/lib/types/facturapiTypes";
 import axios from "axios";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "../ui/use-toast";
 import EmptyItems from "../commons/EmptyItems";
-import { Trash } from "lucide-react";
-import ClientCard from "../commons/client-card";
+import CustomerCard from "../commons/client-card";
+import ModalConfirm from "../commons/modal/ModalConfirm";
+
 
 const CustomerCards = ({ data }: { data: CustomersFacturAPI[] }) => {
     const router = useRouter()
     const { update } = useSession()
     const [isPending, startTransition] = useTransition()
     const [isDisabledButton, setIsDisabledButton] = useState(false)
-
-  const onDelete = async (id: string) => {
+    const [isOpen, setIsOpen] = useState(false)
+    const [customerId, setCustomerId] = useState<null | string>(null)
+  const onDelete = async () => {
     try {
         setIsDisabledButton(true)
       const response = await axios.delete(`/api/clients`, {
         data: {
-          client_id: id,
+          client_id: customerId,
         },
       });
       toast({ title: "Se ha borrado el cliente." });
       await update();
+      setIsOpen(false)
       startTransition(() => {
         router.refresh();
       });
@@ -49,16 +49,19 @@ const CustomerCards = ({ data }: { data: CustomersFacturAPI[] }) => {
   return (
     <>
       {data.map((item) => (
-        <ClientCard 
+        <CustomerCard 
         key={item.id}
         title={item.legal_name}
         subtitle={item.tax_id}
         description={item.email}
-        onDelete={() => {}}
+        onDelete={() =>{ setIsOpen(true)
+        setCustomerId(item.id)
+        }}
         buttonText="Ver cliente"
         onClick={() => {}}
         />
       ))}
+      <ModalConfirm isOpen={isOpen} onCancel={() => setIsOpen(false)} onContinue={onDelete} title="¿Desea borrar el cliente?" disableButton={isDisabledButton} />
     </>
   );
 };

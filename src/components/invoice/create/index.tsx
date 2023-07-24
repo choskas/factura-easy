@@ -21,7 +21,7 @@ import Paginator from "@/components/commons/Paginator";
 import useCreateInvoice from "@/hooks/invoice/useCreateInvoice";
 import CustomSelect from "@/components/commons/custom-select";
 import { CFDI_USER, PAYMENT_TYPE } from "@/lib/constants/catalogs";
-import ClientCard from "@/components/commons/client-card";
+import CustomerCard from "@/components/commons/client-card";
 import ProductCard from "@/components/commons/product-card";
 import { FormLabel } from "@/components/ui/form";
 
@@ -105,7 +105,7 @@ const InvoiceAccordionsSteps = ({
                 </form>
               </div>
               {customersState.map((item) => (
-                <ClientCard
+                <CustomerCard
                   key={item.id}
                   title={item.legal_name}
                   subtitle={item.tax_id}

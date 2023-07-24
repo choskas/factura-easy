@@ -1,4 +1,3 @@
-import { TAX_REGIME } from "@/lib/constants/catalogs";
 import {
   Popover,
   PopoverTrigger,
@@ -40,9 +39,10 @@ const CustomSelect = ({ options, onChange, value }: CustomSelectProps) => {
               setCurrentOptions(seek);
               return 1;
             }
-            if (search === ''){
-              setCurrentOptions(options)
-               return 1}
+            if (search === "") {
+              setCurrentOptions(options);
+              return 1;
+            }
 
             return 0;
           }}

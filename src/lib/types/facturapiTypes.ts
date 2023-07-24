@@ -32,3 +32,32 @@ export interface CustomersFacturAPI {
   __v: number;
   id: string;
 }
+
+export interface InvoicesFacturAPI {
+  id: string;
+  created_at: string;
+  livemode: boolean;
+  status: string;
+  cancellation_status: string;
+  verification_url: string;
+  date: string;
+  address: Address;
+  cancellation_receipt: string;
+  type: string;
+  customer: CustomersFacturAPI;
+  total: number;
+  uuid: string;
+  folio_number: number;
+  series: string;
+  external_id: string;
+  payment_form: boolean;
+  items: ProductsFacturAPI[];
+  related_documents: any;
+  currency: string;
+  exchange: number;
+  complements: any;
+  pdf_custom_section: string;
+  addenda: string;
+  namespaces: any;
+  stamp: any;
+}
