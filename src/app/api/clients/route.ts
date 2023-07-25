@@ -7,12 +7,12 @@ import { NextResponse } from "next/server";
 interface RequestCustomer extends Customer {}
 
 export async function GET(req: any, res: Response) {
-  const session = await getToken({ req });
+  const token = req.nextUrl.searchParams.get("token")
   const page = req.nextUrl.searchParams.get("page")
-  if (!session)
+  if (!token)
     return NextResponse.json({ message: "Unauthorizaed" }, { status: 401 });
   const customers = await facturaApiInstance.get(`customers/?page=${page ? page : 1}`, {
-    headers: { Authorization: `Bearer ${session.data.facturapi_token}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
   return NextResponse.json({
     status: 200,

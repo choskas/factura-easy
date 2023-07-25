@@ -54,12 +54,12 @@ export async function POST(req: any, res: Response) {
 }
 
 export async function GET(req: any) {
-  const session = await getToken({ req });
-  if (!session)
+  const token = req.nextUrl.searchParams.get("token")
+  if (!token)
     return NextResponse.json({ message: "Unauthorizaed" }, { status: 401 });
     const page = req.nextUrl.searchParams.get("page")
   const products = await facturaApiInstance.get(`products/?page=${page ? page : 1}`, {
-    headers: { Authorization: `Bearer ${session.data.facturapi_token}` },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   return NextResponse.json({

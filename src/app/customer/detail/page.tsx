@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 import { CustomersFacturAPI } from "@/lib/types/facturapiTypes";
 import GoBack from "@/components/commons/GoBack";
 import { Card } from "@/components/ui/card";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { getServerSession } from "next-auth";
 
 interface CustomerDetailProps {
     searchParams: {
@@ -12,17 +14,17 @@ interface CustomerDetailProps {
     }
 }
 
-const getData = async (id: string): Promise<CustomersFacturAPI> => {
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/clients/detail/?id=${id}`, {
+const getData = async (id: string, token: string): Promise<CustomersFacturAPI> => {
+    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/clients/detail/?id=${id}&token=${token}`, {
       method: "GET",
-      headers: headers(),
     });
     const json = await response.json();
     return json.customer;
   };
 
 const CustomerDetailPage = async ({ searchParams }: CustomerDetailProps) => {
-    const data = await getData(searchParams.customerId)
+  const session = await getServerSession(authOptions)
+    const data = await getData(searchParams.customerId, session?.facturapi_token as string)
     return (
         <main className="flex min-h-screen flex-col dark:bg-zinc-950 bg-whited p-[24px]">
            <GoBack />

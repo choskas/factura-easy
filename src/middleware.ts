@@ -4,6 +4,7 @@ import { withAuth } from "next-auth/middleware"
 import { Status } from "./lib/types/next-auth.d.ts";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { headers } from "next/headers.js";
 
 const PROTECTED_ROUTES = ["/dashboard", "/customer", "/product"]
 
@@ -17,9 +18,10 @@ export default withAuth(
     }
 
     if (PROTECTED_ROUTES.some(route => req.url.includes(route)) && session?.data.status === Status.VALIDATED){
+      
       return NextResponse.next()
     }
-  
+
   return NextResponse.next()
   },
   // {
