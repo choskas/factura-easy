@@ -5,8 +5,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const downloadFromUTF8 = (utf8: any, fileName: string) => {
-  const blob = new Blob([utf8], { type: "application/xml" });
+export const downloadFromUTF8 = (utf8: any, fileName: string, type: string) => {
+  const blob = new Blob([utf8], { type });
   const url = URL.createObjectURL(blob);
 
   const link = document.createElement("a");

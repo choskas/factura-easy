@@ -75,20 +75,22 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
 
   const onDownload = async (id: string, status: string) => {
     try {
+      let type = 'application/xml';
       if (status !== "canceled") {
+        type = 'application/pdf';
         const invoice = await facturaApiInstance.get(
           `invoices/${id}/${"pdf"}`,
           {
             responseType: "blob",
             headers: {
-              Accept: "application/pdf",
+              Accept: type,
               Authorization: `Bearer ${
                 session.data ? session.data.facturapi_token : ""
               }`,
             },
           }
         );
-        downloadFromUTF8(invoice.data, `factura-${id}.pdf`);
+        downloadFromUTF8(invoice.data, `factura-${id}.pdf`, type);
         return;
       }
       const report = await facturaApiInstance.get(
@@ -96,14 +98,14 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
         {
           responseType: "blob",
           headers: {
-            Accept: "application/xml",
+            Accept: type,
             Authorization: `Bearer ${
               session.data ? session.data.facturapi_token : ""
             }`,
           },
         }
       );
-      downloadFromUTF8(report.data, `acuse-${id}.xml`);
+      downloadFromUTF8(report.data, `acuse-${id}.xml`, type);
       return;
     } catch (error) {
       return error;
