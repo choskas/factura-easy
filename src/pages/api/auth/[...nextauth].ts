@@ -1,11 +1,11 @@
-import NextAuth, { User } from "next-auth";
+import NextAuth, { NextAuthOptions, User } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import axios from "axios";
 import {GET_USER_BY_ID_NO_PASS} from '@/lib/querys'
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   // @ts-ignore
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -61,11 +61,14 @@ export default NextAuth({
   },
   session: {
     strategy: "jwt",
-  },
+    maxAge: 30 * 24 * 60 * 60 
+},
   site: process.env.NEXTAUTH_URL,
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/",
     error: "/",
   },
-});
+}
+
+export default NextAuth(authOptions);

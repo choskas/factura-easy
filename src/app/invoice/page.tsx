@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 const getData = async () => {
     const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoice`, {
       method: "GET",
+      // @ts-ignore
       headers: headers(),
     });
 
