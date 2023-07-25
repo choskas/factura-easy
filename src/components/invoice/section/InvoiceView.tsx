@@ -75,32 +75,36 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
 
   const onDownload = async (id: string, status: string) => {
     try {
-      if (status === "canceled") {
+      if (status !== "canceled") {
         const invoice = await facturaApiInstance.get(
-          `invoices/${id}/cancellation_receipt/xml`,
+          `invoices/${id}/${"pdf"}`,
           {
             responseType: "blob",
             headers: {
-              Accept: "application/xml",
+              Accept: "application/pdf",
               Authorization: `Bearer ${
                 session.data ? session.data.facturapi_token : ""
               }`,
             },
           }
         );
-        downloadFromUTF8(invoice.data, `acuse-${id}.xml`);
+        downloadFromUTF8(invoice.data, `factura-${id}.pdf`);
         return;
       }
-      const invoice = await facturaApiInstance.get(`invoices/${id}/${"pdf"}`, {
-        responseType: "blob",
-        headers: {
-          Accept: "application/pdf",
-          Authorization: `Bearer ${
-            session.data ? session.data.facturapi_token : ""
-          }`,
-        },
-      });
-      downloadFromUTF8(invoice.data, `factura-${id}.pdf`);
+      const report = await facturaApiInstance.get(
+        `invoices/${id}/cancellation_receipt/xml`,
+        {
+          responseType: "blob",
+          headers: {
+            Accept: "application/xml",
+            Authorization: `Bearer ${
+              session.data ? session.data.facturapi_token : ""
+            }`,
+          },
+        }
+      );
+      downloadFromUTF8(report.data, `acuse-${id}.xml`);
+      return;
     } catch (error) {
       return error;
     }
@@ -162,7 +166,10 @@ const InvoiceView = ({ data }: { data: InvoicesFacturAPI[] }) => {
             </Select>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={onCancel} className="mt-[12px]">
+            <AlertDialogCancel
+              onClick={() => setIsOpen(false)}
+              className="mt-[12px]"
+            >
               Regresar
             </AlertDialogCancel>
             <AlertDialogAction onClick={onCancel}>
