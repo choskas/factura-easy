@@ -56,6 +56,7 @@ export default function Home() {
         buttonText="Nueva factura"
         buttonTo="/invoice/create"
         linkTo="/invoice"
+        disabledButton={session.data?.available_folios === 0 ? true : false}
       />
 
       <section className="my-[24px]">

@@ -15,7 +15,8 @@ const CustomCard = ({
   buttonText,
   buttonVariant,
   linkTo,
-  buttonTo
+  buttonTo,
+  disabledButton = false
 }: CustomCardProps) => {
   return (
     <Card className="p-[24px]">
@@ -33,6 +34,7 @@ const CustomCard = ({
       </Link>
       <Link href={buttonTo}>
       <Button
+        disabled={disabledButton}
         onClick={onClickButton}
         variant={buttonVariant ? buttonVariant : "default" }
         className="uppercase font-description p-[8px] text-center w-full"

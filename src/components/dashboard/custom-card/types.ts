@@ -11,4 +11,5 @@ export type CustomCardProps = {
   buttonVariant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost"
   linkTo: string
   buttonTo: string
+  disabledButton?: boolean
 };
